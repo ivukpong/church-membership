@@ -1,13 +1,14 @@
 # Church Details Management Application
 
-A modern, production-ready web application for collecting, validating, and managing personal and church worker details.
+A modern, production-ready web application for collecting, validating, and managing personal and church worker details with secure admin authentication.
 
 ## ✨ Features
 
 ### Core Functionality
+- **🔐 Admin Authentication** - Secure login system for admin access
 - **Personal Details Form**: Collect first name, middle name, last name, phone, address, marital status, and date of birth
 - **Church Details Form**: Track worker/volunteer status and department assignments
-- **Dynamic Department Management**: Add multiple departments with individual role assignments (Member, Assistant HoD, HoD)
+- **Dynamic Department Management**: Create and manage departments, then assign members with roles (Member, Assistant HoD, HoD)
 - **Form Validation**: Real-time validation using Zod schemas
 - **Data Persistence**: LocalStorage-based data management
 
@@ -15,8 +16,16 @@ A modern, production-ready web application for collecting, validating, and manag
 - **Edit & Delete**: Modify or remove member records
 - **Table View**: View all members in a sortable table
 - **CSV Export**: Export member data to CSV format
-- **Dark Mode**: Toggle between light and dark themes
+- **Dark Mode**: Toggle between light and dark themes with persistence
 - **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
+
+## 🔐 Authentication
+
+Default admin credentials:
+- **Username**: `admin`
+- **Password**: `church2026`
+
+⚠️ **Important**: For production use, change these credentials in [src/contexts/AuthContext.jsx](src/contexts/AuthContext.jsx) or implement environment variables.
 
 ## 🎨 UI/UX Highlights
 
@@ -160,6 +169,42 @@ Potential features for extension:
 - Print member cards
 - Email notifications
 - Advanced reporting
+- Multi-user authentication with roles
+
+## 🚀 Deployment
+
+### Deploy to Vercel
+
+1. **Push to GitHub** (if not already done):
+```bash
+git remote add origin YOUR_GITHUB_REPO_URL
+git push -u origin master
+```
+
+2. **Deploy on Vercel**:
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your GitHub repository
+   - Vercel will auto-detect Vite settings
+   - Click "Deploy"
+
+3. **Your app will be live!** 🎉
+
+The `vercel.json` file is already configured for proper SPA routing.
+
+### Environment Variables (Optional)
+
+For production, consider using environment variables for credentials:
+```bash
+VITE_ADMIN_USERNAME=your_username
+VITE_ADMIN_PASSWORD=your_password
+```
+
+Update [src/contexts/AuthContext.jsx](src/contexts/AuthContext.jsx) to use:
+```javascript
+const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'church2026';
+```
 
 ## 📝 License
 
