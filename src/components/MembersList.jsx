@@ -35,10 +35,10 @@ export default function MembersList({ members, onEdit, onDelete, onExport }) {
                 Phone
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Marital Status
+                Address
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Worker
+                Member Type
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Departments
@@ -62,20 +62,25 @@ export default function MembersList({ members, onEdit, onDelete, onExport }) {
                     {member.personalDetails.phone}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4">
                   <div className="text-sm text-gray-700 dark:text-gray-300">
-                    {member.personalDetails.maritalStatus}
+                    {member.personalDetails.houseNumber} {member.personalDetails.streetName}
+                    {member.personalDetails.busStop && `, ${member.personalDetails.busStop}`}
+                    <br />
+                    {member.personalDetails.city}, {member.personalDetails.state}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      member.churchDetails.isWorker
+                      member.churchDetails.memberType === 'Worker'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        : member.churchDetails.memberType === 'Volunteer'
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                         : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
                     }`}
                   >
-                    {member.churchDetails.isWorker ? 'Yes' : 'No'}
+                    {member.churchDetails.memberType}
                   </span>
                 </td>
                 <td className="px-6 py-4">

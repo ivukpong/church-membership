@@ -7,7 +7,11 @@ export const personalDetailsSchema = z.object({
   phone: z.string()
     .min(10, 'Phone number must be at least 10 digits')
     .regex(/^[\d\s+()-]+$/, 'Invalid phone number format'),
-  address: z.string().min(1, 'Address is required'),
+  houseNumber: z.string().min(1, 'House number is required'),
+  streetName: z.string().min(1, 'Street name is required'),
+  busStop: z.string().optional(),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
   maritalStatus: z.enum(['Single', 'Married', 'Divorced', 'Widowed'], {
     required_error: 'Please select a marital status',
   }),
@@ -23,7 +27,9 @@ export const departmentSchema = z.object({
 });
 
 export const churchDetailsSchema = z.object({
-  isWorker: z.boolean(),
+  memberType: z.enum(['Worker', 'Volunteer', 'Church Member'], {
+    required_error: 'Please select a member type',
+  }),
   departments: z.array(departmentSchema).optional(),
 });
 

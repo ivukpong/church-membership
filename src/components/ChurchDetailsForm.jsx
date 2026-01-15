@@ -1,12 +1,14 @@
 import DepartmentInput from './DepartmentInput';
 
 export default function ChurchDetailsForm({ watch, setValue, errors, availableDepartments }) {
-  const isWorker = watch('churchDetails.isWorker');
+  const memberType = watch('churchDetails.memberType');
   const departments = watch('churchDetails.departments') || [];
 
   const handleDepartmentsChange = (newDepartments) => {
     setValue('churchDetails.departments', newDepartments, { shouldValidate: true });
   };
+
+  const requiresDepartments = memberType === 'Worker' || memberType === 'Volunteer';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">
@@ -16,33 +18,51 @@ export default function ChurchDetailsForm({ watch, setValue, errors, availableDe
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Worker / Volunteer
+          Member Type <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-6">
+        <div className="flex flex-col sm:flex-row gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
-              value="true"
-              checked={isWorker === true}
-              onChange={() => setValue('churchDetails.isWorker', true)}
+              value="Worker"
+              checked={memberType === 'Worker'}
+              onChange={() => setValue('churchDetails.memberType', 'Worker')}
               className="w-4 h-4 text-primary-600 focus:ring-primary-500"
             />
-            <span className="text-gray-700 dark:text-gray-300">Yes</span>
+            <span className="text-gray-700 dark:text-gray-300">Worker</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
-              value="false"
-              checked={isWorker === false}
-              onChange={() => setValue('churchDetails.isWorker', false)}
+              value="Volunteer"
+              checked={memberType === 'Volunteer'}
+              onChange={() => setValue('churchDetails.memberType', 'Volunteer')}
               className="w-4 h-4 text-primary-600 focus:ring-primary-500"
             />
-            <span className="text-gray-700 dark:text-gray-300">No</span>
+            <span className="text-gray-700 dark:text-gray-300">Volunteer</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              value="Church Member"
+              checked={memberType === 'Church Member'}
+              onChange={() => {
+                setValue('churchDetails.memberType', 'Church Member');
+                setValue('churchDetails.departments', []);
+              }}
+              className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+            />
+            <span className="text-gray-700 dark:text-gray-300">Church Member</span>
           </label>
         </div>
+        {errors.churchDetails?.memberType && (
+          <p className="mt-2 text-sm text-red-500">
+            {errors.churchDetails.memberType.message}
+          </p>
+        )}
       </div>
 
-      {isWorker && (
+      {requiresDepartments && (
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
             Departments
