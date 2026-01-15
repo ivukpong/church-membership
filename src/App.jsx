@@ -184,7 +184,11 @@ function AppContent() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <Users size={40} className="text-primary-600 dark:text-primary-400" />
+            <img 
+              src="/logo/jubilee-logo-red.8e7808b6.png" 
+              alt="Church Logo" 
+              className="h-16 w-auto"
+            />
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Church Details Management

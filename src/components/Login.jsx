@@ -24,8 +24,12 @@ export default function Login() {
       <div className="max-w-md w-full">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <Lock className="text-white" size={32} />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img 
+              src="/logo/jubilee-logo-red.8e7808b6.png" 
+              alt="Church Logo" 
+              className="h-24 w-auto"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Church Details Management
