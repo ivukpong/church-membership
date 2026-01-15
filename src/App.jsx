@@ -107,6 +107,7 @@ function AppContent() {
 
   const handleExportCSV = () => {
     const headers = [
+      'Member ID',
       'First Name',
       'Middle Name',
       'Last Name',
@@ -123,6 +124,7 @@ function AppContent() {
     ];
 
     const rows = members.map((member) => [
+      member.id,
       member.personalDetails.firstName,
       member.personalDetails.middleName || '',
       member.personalDetails.lastName,

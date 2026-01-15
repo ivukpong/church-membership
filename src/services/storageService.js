@@ -1,5 +1,17 @@
 const STORAGE_KEY = 'church_members';
 
+const generateMemberId = (members, memberType) => {
+  // Filter members by type to get correct count
+  const typePrefix = memberType === 'Worker' ? 'WRK' : 
+                     memberType === 'Volunteer' ? 'VOL' : 'MBR';
+  const sameTypeMembers = members.filter(m => {
+    const prefix = m.id.split('-')[1];
+    return prefix === typePrefix;
+  });
+  const count = sameTypeMembers.length + 1;
+  return `JCC-${typePrefix}-${String(count).padStart(3, '0')}`;
+};
+
 export const storageService = {
   getMembers: () => {
     try {
@@ -19,9 +31,10 @@ export const storageService = {
       if (existingIndex >= 0) {
         members[existingIndex] = { ...member, updatedAt: new Date().toISOString() };
       } else {
+        const memberId = generateMemberId(members, member.churchDetails.memberType);
         members.push({
           ...member,
-          id: crypto.randomUUID(),
+          id: memberId,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });

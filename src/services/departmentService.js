@@ -1,5 +1,10 @@
 const DEPARTMENTS_KEY = 'church_departments';
 
+const generateDepartmentId = (departments) => {
+  const count = departments.length + 1;
+  return `JCC-DEPT-${String(count).padStart(3, '0')}`;
+};
+
 export const departmentService = {
   getDepartments: () => {
     try {
@@ -18,7 +23,7 @@ export const departmentService = {
       
       if (normalized && !departments.some(d => d.name.toLowerCase() === normalized.toLowerCase())) {
         const newDept = {
-          id: crypto.randomUUID(),
+          id: generateDepartmentId(departments),
           name: normalized,
           createdAt: new Date().toISOString(),
         };
