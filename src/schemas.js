@@ -5,8 +5,7 @@ export const personalDetailsSchema = z.object({
   middleName: z.string().optional(),
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string()
-    .min(10, 'Phone number must be at least 10 digits')
-    .regex(/^[\d\s+()-]+$/, 'Invalid phone number format'),
+    .regex(/^(0[789][01]\d{8}|\+234[789][01]\d{8})$/, 'Phone number must be 11 digits (e.g., 08012345678) or start with +234'),
   houseNumber: z.string().min(1, 'House number is required'),
   streetName: z.string().min(1, 'Street name is required'),
   busStop: z.string().optional(),

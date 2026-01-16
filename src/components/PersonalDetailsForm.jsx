@@ -64,6 +64,8 @@ export default function PersonalDetailsForm({ register, errors }) {
           <input
             type="tel"
             {...register('personalDetails.phone')}
+            placeholder="08012345678 or +2348012345678"
+            maxLength={14}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
               errors.personalDetails?.phone
                 ? 'border-red-500'
