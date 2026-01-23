@@ -1,6 +1,26 @@
-import { Edit2, Trash2, Download } from 'lucide-react';
+import { Edit2, Trash2, Download, Search, Eye } from 'lucide-react';
+import { useState } from 'react';
 
-export default function MembersList({ members, onEdit, onDelete, onExport }) {
+export default function MembersList({ members, onEdit, onDelete, onExport, onViewCard }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
+
+  const filteredMembers = members.filter((member) => {
+    const matchesSearch =
+      searchTerm === '' ||
+      member.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${member.personalDetails.firstName} ${member.personalDetails.middleName} ${member.personalDetails.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      member.personalDetails.phone.includes(searchTerm) ||
+      member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesType =
+      filterType === 'all' || member.churchDetails.memberType === filterType;
+
+    return matchesSearch && matchesType;
+  });
+
   if (members.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
@@ -11,17 +31,43 @@ export default function MembersList({ members, onEdit, onDelete, onExport }) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Members List ({members.length})
-        </h2>
-        <button
-          onClick={onExport}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Download size={18} />
-          Export CSV
-        </button>
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700 space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Members List ({filteredMembers.length} of {members.length})
+          </h2>
+          <button
+            onClick={onExport}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Download size={18} />
+            Export CSV
+          </button>
+        </div>
+
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search by name, ID, phone, or department..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          >
+            <option value="all">All Members</option>
+            <option value="Worker">Workers</option>
+            <option value="Volunteer">Volunteers</option>
+            <option value="Church Member">Church Members</option>
+          </select>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -52,19 +98,35 @@ export default function MembersList({ members, onEdit, onDelete, onExport }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {members.map((member) => (
-              <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-mono font-semibold text-blue-600 dark:text-blue-400">
-                    {member.id}
-                  </div>
+            {filteredMembers.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  No members found matching your search criteria.
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
-                    {member.personalDetails.firstName} {member.personalDetails.middleName}{' '}
-                    {member.personalDetails.lastName}
-                  </div>
-                </td>
+              </tr>
+            ) : (
+              filteredMembers.map((member) => (
+                <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-mono font-semibold text-blue-600 dark:text-blue-400">
+                      {member.id}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      {member.personalDetails.photo && (
+                        <img
+                          src={member.personalDetails.photo}
+                          alt=""
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      )}
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {member.personalDetails.firstName} {member.personalDetails.middleName}{' '}
+                        {member.personalDetails.lastName}
+                      </div>
+                    </div>
+                  </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-700 dark:text-gray-300">
                     {member.personalDetails.phone}
@@ -108,13 +170,34 @@ export default function MembersList({ members, onEdit, onDelete, onExport }) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
+                    onClick={() => onViewCard(member)}
+                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
+                    aria-label="View member card"
+                    title="View Card"
+                  >
+                    <Eye size={18} />
+                  </button>
+                  <button
                     onClick={() => onEdit(member)}
-                    className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-4"
+                    className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-3"
                     aria-label="Edit member"
+                    title="Edit"
                   >
                     <Edit2 size={18} />
                   </button>
                   <button
+                    onClick={() => onDelete(member.id)}
+                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                    aria-label="Delete member"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))
+            )}
+          </tbody>
                     onClick={() => onDelete(member.id)}
                     className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                     aria-label="Delete member"

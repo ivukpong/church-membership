@@ -26,7 +26,7 @@ This guide will walk you through setting up Supabase as the backend database for
 
 ```sql
 -- Create members table
-CREATE TABLE members (
+CREATE TABLE IF NOT EXISTS members (
   id TEXT PRIMARY KEY,
   personal_details JSONB NOT NULL,
   church_details JSONB NOT NULL,
@@ -35,32 +35,34 @@ CREATE TABLE members (
 );
 
 -- Create departments table
-CREATE TABLE departments (
+CREATE TABLE IF NOT EXISTS departments (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Create indexes for better query performance
-CREATE INDEX idx_members_created_at ON members(created_at DESC);
-CREATE INDEX idx_departments_name ON departments(name);
+CREATE INDEX IF NOT EXISTS idx_members_created_at ON members(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_departments_name ON departments(name);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
 
--- Create policies to allow all operations (authenticated users only)
--- For production, you should create more restrictive policies
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Enable all operations for authenticated users on members" ON members;
+DROP POLICY IF EXISTS "Enable all operations for authenticated users on departments" ON departments;
+DROP POLICY IF EXISTS "Enable all operations on members" ON members;
+DROP POLICY IF EXISTS "Enable all operations on departments" ON departments;
 
--- Members policies
-CREATE POLICY "Enable all operations for authenticated users on members"
+-- Create policies to allow all operations (public access)
+CREATE POLICY "Enable all operations on members"
   ON members
   FOR ALL
   USING (true)
   WITH CHECK (true);
 
--- Departments policies
-CREATE POLICY "Enable all operations for authenticated users on departments"
+CREATE POLICY "Enable all operations on departments"
   ON departments
   FOR ALL
   USING (true)

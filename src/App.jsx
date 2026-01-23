@@ -6,6 +6,7 @@ import { Users, CheckCircle, LogOut } from 'lucide-react';
 import PersonalDetailsForm from './components/PersonalDetailsForm';
 import ChurchDetailsForm from './components/ChurchDetailsForm';
 import MembersList from './components/MembersList';
+import MemberCard from './components/MemberCard';
 import DepartmentManager from './components/DepartmentManager';
 import DarkModeToggle from './components/DarkModeToggle';
 import Login from './components/Login';
@@ -27,6 +28,7 @@ function AppContent() {
   const [editingMember, setEditingMember] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [viewMode, setViewMode] = useState('form'); // 'form', 'list', or 'departments'
+  const [selectedMemberCard, setSelectedMemberCard] = useState(null);
 
   const {
     register,
@@ -44,6 +46,9 @@ function AppContent() {
         middleName: '',
         lastName: '',
         phone: '',
+        phoneSecondary: '',
+        emergencyContact: '',
+        photo: '',
         houseNumber: '',
         streetName: '',
         busStop: '',
@@ -91,11 +96,35 @@ function AppContent() {
       const updatedMembers = await storageService.getMembers();
       setMembers(updatedMembers);
       
-      reset();
+      // Clear form and show success
+      reset({
+        personalDetails: {
+          firstName: '',
+          middleName: '',
+          lastName: '',
+          phone: '',
+          phoneSecondary: '',
+          emergencyContact: '',
+          photo: '',
+          houseNumber: '',
+          streetName: '',
+          busStop: '',
+          city: '',
+          state: '',
+          maritalStatus: '',
+          dateOfBirth: '',
+        },
+        churchDetails: {
+          memberType: 'Church Member',
+          departments: [],
+        },
+      });
       setEditingMember(null);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
-      setViewMode('list');
+      
+      // Keep on form view for easy consecutive additions
+      setViewMode('form');
     } catch (error) {
       console.error('Error saving member:', error);
       alert('Failed to save member. Please try again.');
@@ -104,6 +133,11 @@ function AppContent() {
 
   const handleEdit = (member) => {
     setEditingMember(member);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleViewCard = (member) => {
+    setSelectedMemberCard(member);
   };
 
   const handleDelete = async (id) => {
@@ -120,7 +154,9 @@ function AppContent() {
       'First Name',
       'Middle Name',
       'Last Name',
-      'Phone',
+      'Primary Phone',
+      'Secondary Phone',
+      'Emergency Contact',
       'House Number',
       'Street Name',
       'Bus Stop',
@@ -138,6 +174,8 @@ function AppContent() {
       member.personalDetails.middleName || '',
       member.personalDetails.lastName,
       member.personalDetails.phone,
+      member.personalDetails.phoneSecondary || '',
+      member.personalDetails.emergencyContact || '',
       member.personalDetails.houseNumber,
       member.personalDetails.streetName,
       member.personalDetails.busStop || '',
@@ -275,7 +313,12 @@ function AppContent() {
         {/* Form View */}
         {viewMode === 'form' && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <PersonalDetailsForm register={register} errors={errors} />
+            <PersonalDetailsForm 
+              register={register} 
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
             <ChurchDetailsForm 
               watch={watch} 
               setValue={setValue} 
@@ -315,6 +358,15 @@ function AppContent() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onExport={handleExportCSV}
+            onViewCard={handleViewCard}
+          />
+        )}
+
+        {/* Member Card Modal */}
+        {selectedMemberCard && (
+          <MemberCard
+            member={selectedMemberCard}
+            onClose={() => setSelectedMemberCard(null)}
           />
         )}
 
