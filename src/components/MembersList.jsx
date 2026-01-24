@@ -2,8 +2,6 @@ import { Edit2, Trash2, Download, Search, Eye } from 'lucide-react';
 import { useState } from 'react';
 
 export default function MembersList({ members, onEdit, onDelete, onExport, onViewCard }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
   const [columnSearch, setColumnSearch] = useState({
     id: '',
     name: '',
@@ -18,19 +16,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
   };
 
   const filteredMembers = members.filter((member) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      member.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${member.personalDetails.firstName} ${member.personalDetails.middleName} ${member.personalDetails.lastName}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      member.personalDetails.phone.includes(searchTerm) ||
-      member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const matchesType =
-      filterType === 'all' || member.churchDetails.memberType === filterType;
-
-    // Column-specific search
+    // Column-specific search only
     const matchesColumnSearch = 
       (columnSearch.id === '' || member.id.toLowerCase().includes(columnSearch.id.toLowerCase())) &&
       (columnSearch.name === '' || 
@@ -46,7 +32,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
       (columnSearch.departments === '' || 
         member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(columnSearch.departments.toLowerCase()) || d.role.toLowerCase().includes(columnSearch.departments.toLowerCase())));
 
-    return matchesSearch && matchesType && matchesColumnSearch;
+    return matchesColumnSearch;
   });
 
   if (members.length === 0) {
@@ -59,7 +45,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700 space-y-4">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Members List ({filteredMembers.length} of {members.length})
@@ -71,30 +57,6 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
             <Download size={18} />
             Export CSV
           </button>
-        </div>
-
-        {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search by name, ID, phone, or department..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          >
-            <option value="all">All Members</option>
-            <option value="Worker">Workers</option>
-            <option value="Volunteer">Volunteers</option>
-            <option value="Church Member">Church Members</option>
-          </select>
         </div>
       </div>
 

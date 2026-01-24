@@ -93,6 +93,7 @@ function AppContent() {
         : data;
       
       await storageService.saveMember(memberToSave);
+      // Manually refetch members after save
       const updatedMembers = await storageService.getMembers();
       setMembers(updatedMembers);
       
