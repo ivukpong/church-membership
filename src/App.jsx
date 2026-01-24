@@ -29,6 +29,7 @@ function AppContent() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [viewMode, setViewMode] = useState('form'); // 'form', 'list', or 'departments'
   const [selectedMemberCard, setSelectedMemberCard] = useState(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const {
     register,
@@ -72,6 +73,7 @@ function AppContent() {
       ]);
       setMembers(membersData);
       setDepartments(departmentsData);
+      setIsInitialLoading(false);
     };
     loadData();
   }, []);
@@ -92,10 +94,39 @@ function AppContent() {
         ? { ...data, id: editingMember.id }
         : data;
       
-      await storageService.saveMember(memberToSave);
-      // Manually refetch members after save
-      const updatedMembers = await storageService.getMembers();
-      setMembers(updatedMembers);
+      // Optimistic update - update UI immediately
+      if (editingMember) {
+        // Update existing member in state immediately
+        const optimisticMembers = members.map(m => 
+          m.id === editingMember.id 
+            ? { 
+                ...memberToSave, 
+                updatedAt: new Date().toISOString(),
+                createdAt: m.createdAt 
+              }
+            : m
+        );
+        setMembers(optimisticMembers);
+      } else {
+        // For new member, generate temporary ID and add to state
+        const typePrefix = data.churchDetails.memberType === 'Worker' ? 'WRK' : 
+                           data.churchDetails.memberType === 'Volunteer' ? 'VOL' : 'MBR';
+        const tempId = `JCC-${typePrefix}-${String(members.filter(m => m.id.includes(typePrefix)).length + 1).padStart(3, '0')}`;
+        const optimisticMember = {
+          ...memberToSave,
+          id: tempId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        setMembers(prev => [optimisticMember, ...prev]);
+      }
+      
+      // Save to database in background
+      storageService.saveMember(memberToSave).catch(error => {
+        console.error('Error saving member:', error);
+        // On error, refetch to get correct state
+        storageService.getMembers().then(setMembers);
+      });
       
       // Clear form and show success
       reset({
@@ -143,9 +174,16 @@ function AppContent() {
 
   const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this member?')) {
-      await storageService.deleteMember(id);
-      const updatedMembers = await storageService.getMembers();
-      setMembers(updatedMembers);
+      // Optimistic update - remove from UI immediately
+      const optimisticMembers = members.filter(m => m.id !== id);
+      setMembers(optimisticMembers);
+      
+      // Delete from database in background
+      storageService.deleteMember(id).catch(error => {
+        console.error('Error deleting member:', error);
+        // On error, refetch to restore correct state
+        storageService.getMembers().then(setMembers);
+      });
     }
   };
 
@@ -210,22 +248,61 @@ function AppContent() {
   };
 
   const handleAddDepartment = async (name) => {
-    await departmentService.saveDepartment(name);
-    const updatedDepartments = await departmentService.getDepartments();
-    setDepartments(updatedDepartments);
+    const normalized = name.trim();
+    if (!normalized) return;
+    
+    // Check for duplicates locally
+    if (departments.some(d => d.name.toLowerCase() === normalized.toLowerCase())) {
+      return;
+    }
+    
+    // Optimistic update - add immediately
+    const tempId = `JCC-DEPT-${String(departments.length + 1).padStart(3, '0')}`;
+    const optimisticDept = {
+      id: tempId,
+      name: normalized,
+      createdAt: new Date().toISOString()
+    };
+    setDepartments(prev => [...prev, optimisticDept]);
+    
+    // Save to database in background
+    departmentService.saveDepartment(name).catch(error => {
+      console.error('Error saving department:', error);
+      // On error, refetch to get correct state
+      departmentService.getDepartments().then(setDepartments);
+    });
   };
 
   const handleDeleteDepartment = async (id) => {
     if (confirm('Are you sure you want to delete this department?')) {
-      await departmentService.deleteDepartment(id);
-      const updatedDepartments = await departmentService.getDepartments();
-      setDepartments(updatedDepartments);
+      // Optimistic update - remove immediately
+      const optimisticDepts = departments.filter(d => d.id !== id);
+      setDepartments(optimisticDepts);
+      
+      // Delete from database in background
+      departmentService.deleteDepartment(id).catch(error => {
+        console.error('Error deleting department:', error);
+        // On error, refetch to restore correct state
+        departmentService.getDepartments().then(setDepartments);
+      });
     }
   };
 
   // Show login if not authenticated
   if (!isAuthenticated) {
     return <Login />;
+  }
+
+  // Show loading spinner on initial load
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading members...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
