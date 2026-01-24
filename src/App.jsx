@@ -155,8 +155,8 @@ function AppContent() {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
       
-      // Keep on form view for easy consecutive additions
-      setViewMode('form');
+      // Return to list view after editing, stay on form for new additions
+      setViewMode(editingMember ? 'list' : 'form');
     } catch (error) {
       console.error('Error saving member:', error);
       alert('Failed to save member. Please try again.');

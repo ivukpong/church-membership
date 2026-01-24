@@ -129,28 +129,33 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-gray-800">
             {filteredMembers.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan="7" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                   No members found matching your search criteria.
                 </td>
               </tr>
             ) : (
-              filteredMembers.map((member) => (
-                <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              filteredMembers.map((member, index) => (
+                <tr 
+                  key={member.id} 
+                  className={`transition-colors hover:bg-blue-50 dark:hover:bg-gray-700 ${
+                    index !== filteredMembers.length - 1 ? 'border-b border-gray-200 dark:border-gray-700' : ''
+                  }`}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-mono font-semibold text-blue-600 dark:text-blue-400">
+                    <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
                       {member.id}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {member.personalDetails.photo && (
                         <img
                           src={member.personalDetails.photo}
                           alt=""
-                          className="w-8 h-8 rounded-full object-cover"
+                          className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700"
                         />
                       )}
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -160,71 +165,80 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                     </div>
                   </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-300">
                     {member.personalDetails.phone}
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-700 dark:text-gray-300">
-                    {member.personalDetails.houseNumber} {member.personalDetails.streetName}
-                    {member.personalDetails.busStop && `, ${member.personalDetails.busStop}`}
-                    <br />
-                    {member.personalDetails.city}, {member.personalDetails.state}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
+                    <div className="font-medium text-gray-900 dark:text-gray-300">
+                      {member.personalDetails.houseNumber} {member.personalDetails.streetName}
+                      {member.personalDetails.busStop && `, ${member.personalDetails.busStop}`}
+                    </div>
+                    <div className="text-xs mt-0.5">
+                      {member.personalDetails.city}, {member.personalDetails.state}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    className={`px-3 py-1.5 inline-flex text-xs leading-4 font-semibold rounded-lg ${
                       member.churchDetails.memberType === 'Worker'
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
                         : member.churchDetails.memberType === 'Volunteer'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                        : 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300'
                     }`}
                   >
                     {member.churchDetails.memberType}
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                  <div className="text-sm">
                     {member.churchDetails.departments?.length > 0 ? (
-                      <div className="space-y-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {member.churchDetails.departments.map((dept, idx) => (
-                          <div key={idx}>
-                            {dept.name} ({dept.role})
-                          </div>
+                          <span 
+                            key={idx}
+                            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                          >
+                            {dept.name}
+                            <span className="ml-1 text-gray-500 dark:text-gray-400">({dept.role})</span>
+                          </span>
                         ))}
                       </div>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <span className="text-gray-400 dark:text-gray-500">—</span>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => onViewCard(member)}
-                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
-                    aria-label="View member card"
-                    title="View Card"
-                  >
-                    <Eye size={18} />
-                  </button>
-                  <button
-                    onClick={() => onEdit(member)}
-                    className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-3"
-                    aria-label="Edit member"
-                    title="Edit"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(member.id)}
-                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                    aria-label="Delete member"
-                    title="Delete"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onViewCard(member)}
+                      className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                      aria-label="View member card"
+                      title="View Card"
+                    >
+                      <Eye size={18} />
+                    </button>
+                    <button
+                      onClick={() => onEdit(member)}
+                      className="p-2 text-amber-600 hover:text-amber-900 hover:bg-amber-50 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-900/20 rounded-lg transition-all"
+                      aria-label="Edit member"
+                      title="Edit"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(member.id)}
+                      className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                      aria-label="Delete member"
+                      title="Delete"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
