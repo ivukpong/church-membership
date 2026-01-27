@@ -8,6 +8,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
     phone: '',
     address: '',
     memberType: '',
+    status: '',
     departments: ''
   });
   const [selectedMembers, setSelectedMembers] = useState([]);
@@ -41,6 +42,9 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
 
   const filteredMembers = members.filter((member) => {
     // Column-specific search only
+    const normalizedStatus = (member.churchDetails.status || 'Active').trim().toLowerCase();
+    const normalizedStatusQuery = columnSearch.status.trim().toLowerCase();
+
     const matchesColumnSearch = 
       (columnSearch.id === '' || member.id.toLowerCase().includes(columnSearch.id.toLowerCase())) &&
       (columnSearch.name === '' || 
@@ -53,6 +57,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
           .toLowerCase()
           .includes(columnSearch.address.toLowerCase())) &&
       (columnSearch.memberType === '' || member.churchDetails.memberType.toLowerCase().includes(columnSearch.memberType.toLowerCase())) &&
+      (columnSearch.status.trim() === '' || normalizedStatus.includes(normalizedStatusQuery)) &&
       (columnSearch.departments === '' || 
         member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(columnSearch.departments.toLowerCase()) || d.role.toLowerCase().includes(columnSearch.departments.toLowerCase())));
 
@@ -164,6 +169,13 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                 <div className="mb-2">Status</div>
+                <input
+                  type="text"
+                  placeholder="Search status..."
+                  value={columnSearch.status}
+                  onChange={(e) => handleColumnSearchChange('status', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                 <div className="mb-2">Departments</div>
