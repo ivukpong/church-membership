@@ -116,7 +116,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1400px] table-auto">
+        <table className="w-full min-w-[1800px] table-fixed">
           <thead className="sticky top-0 z-10">
             <tr className="bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-900 dark:to-blue-800">
               <th
@@ -130,25 +130,25 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                   className="w-4 h-4 rounded border-white/60 text-blue-600 focus:ring-white/60"
                 />
               </th>
-              <th className="min-w-[160px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[170px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Member ID
               </th>
-              <th className="min-w-[260px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[300px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Name
               </th>
-              <th className="min-w-[170px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[190px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Phone
               </th>
-              <th className="min-w-[420px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[460px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Address
               </th>
-              <th className="min-w-[170px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[180px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Member Type
               </th>
-              <th className="min-w-[140px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[360px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Status
               </th>
-              <th className="min-w-[380px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+              <th className="w-[420px] px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                 Departments
               </th>
               <th
@@ -206,8 +206,8 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                 />
               </th>
               <th className="px-6 py-3">
-                <div className="inline-flex w-full items-center justify-start">
-                  <div className="inline-flex rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 p-1 shadow-sm">
+                <div className="inline-flex w-full items-center justify-start overflow-hidden">
+                  <div className="inline-flex flex-nowrap whitespace-nowrap rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 p-1 shadow-sm">
                     <button
                       type="button"
                       onClick={() => setStatusFilter('all')}
@@ -320,7 +320,10 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+                    <div
+                      className="inline-flex max-w-[140px] items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 truncate"
+                      title={member.id}
+                    >
                       {member.id}
                     </div>
                   </td>
@@ -333,14 +336,20 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                           className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700"
                         />
                       )}
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      <div
+                        className="text-sm font-medium text-gray-900 dark:text-white max-w-[240px] truncate"
+                        title={`${member.personalDetails.firstName} ${member.personalDetails.middleName} ${member.personalDetails.lastName}`.replace(/\s+/g, ' ').trim()}
+                      >
                         {member.personalDetails.firstName} {member.personalDetails.middleName}{' '}
                         {member.personalDetails.lastName}
                       </div>
                     </div>
                   </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-300">
+                  <div
+                    className="text-sm font-medium text-gray-900 dark:text-gray-300 max-w-[150px] truncate"
+                    title={member.personalDetails.phone}
+                  >
                     {member.personalDetails.phone}
                   </div>
                 </td>
@@ -349,7 +358,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                     className="text-sm text-gray-700 dark:text-gray-300"
                     title={`${member.personalDetails.houseNumber} ${member.personalDetails.streetName}${member.personalDetails.busStop ? `, ${member.personalDetails.busStop}` : ''}, ${member.personalDetails.city}, ${member.personalDetails.state}`}
                   >
-                    <div className="font-medium text-gray-900 dark:text-gray-200 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <div className="font-medium text-gray-900 dark:text-gray-200 whitespace-normal break-words line-clamp-2">
                       {member.personalDetails.houseNumber} {member.personalDetails.streetName}
                       {member.personalDetails.busStop && `, ${member.personalDetails.busStop}`}
                       {member.personalDetails.city && `, ${member.personalDetails.city}`}
@@ -382,9 +391,18 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm">
+                  <div
+                    className="text-sm"
+                    title={
+                      member.churchDetails.departments?.length > 0
+                        ? member.churchDetails.departments
+                            .map((d) => `${d.name} (${d.role})`)
+                            .join(', ')
+                        : ''
+                    }
+                  >
                     {member.churchDetails.departments?.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-1.5 max-h-[3.25rem] overflow-hidden">
                         {member.churchDetails.departments.map((dept, idx) => (
                           <span 
                             key={idx}
