@@ -1,21 +1,21 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Lock, User, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { Lock, User, AlertCircle } from "lucide-react";
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { login } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    
+    setError("");
+
     const success = login(username, password);
     if (!success) {
-      setError('Invalid username or password');
-      setPassword('');
+      setError("Invalid username or password");
+      setPassword("");
     }
   };
 
@@ -25,18 +25,16 @@ export default function Login() {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <img 
-              src="/logo/jubilee-logo-red.8e7808b6.png" 
-              alt="Church Logo" 
+            <img
+              src="/logo/jubilee-logo-red.8e7808b6.png"
+              alt="Church Logo"
               className="h-24 w-auto"
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             JCC Worker's Directory
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Admin Login
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">Admin Login</p>
         </div>
 
         {/* Login Card */}
@@ -45,7 +43,10 @@ export default function Login() {
             {/* Error Message */}
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2">
-                <AlertCircle className="text-red-600 dark:text-red-400" size={20} />
+                <AlertCircle
+                  className="text-red-600 dark:text-red-400"
+                  size={20}
+                />
                 <span className="text-red-800 dark:text-red-200">{error}</span>
               </div>
             )}
@@ -56,7 +57,10 @@ export default function Login() {
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <User
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="text"
                   value={username}
@@ -74,7 +78,10 @@ export default function Login() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Lock
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="password"
                   value={password}
@@ -95,7 +102,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Demo Credentials Info */}
+          {/* Demo Credentials Info
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <p className="text-sm text-blue-800 dark:text-blue-200 font-medium mb-1">
               Demo Credentials:
@@ -106,7 +113,7 @@ export default function Login() {
             <p className="text-sm text-blue-700 dark:text-blue-300">
               Password: <span className="font-mono font-semibold">church2026</span>
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
